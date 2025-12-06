@@ -1,0 +1,62 @@
+<header
+    class="h-16 bg-black/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-30">
+    <!-- Search Bar (optional - commented for now) -->
+    <div class="flex-1 max-w-xl">
+        <!-- <div class="relative">
+      <input type="text" placeholder="Buscar eventos, lugares..." 
+        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
+    </div> -->
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center gap-4">
+        <!-- Notifications -->
+        <button class="relative p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+            <span class="text-xl">🔔</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+
+        <!-- User Profile Dropdown -->
+        <div class="relative">
+            <button (click)="toggleDropdown()"
+                class="flex items-center gap-3 hover:bg-white/5 p-2 rounded-lg transition-colors">
+                <div
+                    class="h-9 w-9 rounded-full bg-gradient-to-tr from-accent to-secondary flex items-center justify-center text-sm font-bold text-white">
+                    {{ userInitials() }}
+                </div>
+                <div class="text-left hidden md:block">
+                    <p class="text-sm font-medium text-white">{{ currentUser()?.fullName || 'Usuario' }}</p>
+                    <p class="text-xs text-gray-500">Ver perfil</p>
+                </div>
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Dropdown Menu -->
+            @if (isDropdownOpen()) {
+            <div
+                class="absolute right-0 mt-2 w-56 bg-gray-900 border border-white/10 rounded-xl shadow-xl overflow-hidden">
+                <div class="p-3 border-b border-white/10">
+                    <p class="text-sm font-medium text-white">{{ currentUser()?.fullName || 'Usuario' }}</p>
+                    <p class="text-xs text-gray-500">{{ currentUser()?.email }}</p>
+                </div>
+                <div class="py-2">
+                    <a routerLink="/profile" (click)="closeDropdown()"
+                        class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
+                        <span class="mr-3">👤</span> Mi Perfil
+                    </a>
+                    <a routerLink="/tickets" (click)="closeDropdown()"
+                        class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
+                        <span class="mr-3">🎟️</span> Mis Tickets
+                    </a>
+                    <button (click)="logout()"
+                        class="w-full flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
+                        <span class="mr-3">🚪</span> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</header>

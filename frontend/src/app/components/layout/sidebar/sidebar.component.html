@@ -1,0 +1,55 @@
+<aside
+  class="w-64 h-screen bg-black/90 backdrop-blur-xl border-r border-white/10 flex flex-col fixed left-0 top-0 z-40">
+  <!-- Logo -->
+  <div class="p-6 border-b border-white/5">
+    <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent to-secondary">
+      Eventor
+    </h1>
+    <p class="text-xs text-gray-500 mt-1">Córdoba Capital</p>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+    <!-- Group: Principal -->
+    <div class="mb-6">
+      <a routerLink="/" routerLinkActive="bg-white/10 text-white" [routerLinkActiveOptions]="{exact: true}"
+        class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+        <span class="mr-3 text-lg">🏠</span> Home
+      </a>
+      <a routerLink="/discover" routerLinkActive="bg-white/10 text-white"
+        class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+        <span class="mr-3 text-lg">🗺️</span> Explorar Mapa
+      </a>
+    </div>
+
+    <!-- Group: Mi Cuenta -->
+    <div class="mb-6">
+      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">Mi Cuenta</h3>
+      <a routerLink="/tickets" routerLinkActive="bg-white/10 text-white"
+        class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+        <span class="mr-3 text-lg">🎟️</span> Mis Tickets
+      </a>
+    </div>
+
+    <!-- Group: Organizadores (solo si es B2B) -->
+    <div class="mb-6">
+      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">Organizador</h3>
+      <a routerLink="/dashboard" routerLinkActive="bg-white/10 text-white"
+        class="flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+        <span class="mr-3 text-lg">📊</span> Dashboard
+      </a>
+      <button (click)="createEvent()"
+        class="w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+        <span class="mr-3 text-lg">➕</span> Crear Evento
+      </button>
+    </div>
+  </nav>
+
+  <!-- Settings (Bottom) -->
+  <div class="p-4 border-t border-white/5">
+    <button (click)="openSettings()"
+      class="w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
+      <span class="mr-3 text-lg">⚙️</span> Configuración
+    </button>
+  </div>
+</aside>

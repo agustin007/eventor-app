@@ -1,0 +1,17 @@
+# Visual Studio Code
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Angular
+.angular/
+dist/
+.env
+
+# .NET
+bin/
+obj/
+*.user
+*.lock.json
