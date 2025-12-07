@@ -81,7 +81,16 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<EventosCba.API.Data.ApplicationDbContext>();
-    context.Database.Migrate();
+    if (app.Environment.IsProduction())
+    {
+        // For Postgres/Production, use EnsureCreated to skip migrations logic
+        context.Database.EnsureCreated();
+    }
+    else
+    {
+        // For Local/Development, use Migrations
+        context.Database.Migrate();
+    }
     EventosCba.API.Seeders.DataSeeder.Seed(context);
 }
 
