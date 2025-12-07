@@ -1,50 +1,78 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-900 relative overflow-hidden">
-    <!-- Background Elements -->
-    <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-500/20 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary-500/20 rounded-full blur-[120px]">
+<div class="min-h-screen flex items-center justify-center bg-gray-950 relative overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+            class="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] bg-primary-500/20 rounded-full blur-[120px] animate-pulse-slow">
+        </div>
+        <div
+            class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] bg-secondary-500/20 rounded-full blur-[100px] animate-pulse-slow delay-1000">
         </div>
     </div>
 
-    <div
-        class="relative z-10 w-full max-w-md p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
+    <!-- Login Card -->
+    <div [class.animate-shake]="shake()"
+        class="relative z-10 w-full max-w-md p-8 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl transition-transform">
+
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-            <p class="text-gray-400">Sign in to continue to Eventor</p>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent mb-2">
+                Eventor</h1>
+            <p class="text-gray-400 font-light">Tu puerta a las mejores experiencias</p>
         </div>
 
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="space-y-6">
-            <!-- Error Message -->
-            <div *ngIf="errorMessage"
-                class="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm text-center">
-                {{ errorMessage }}
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+            <!-- Email -->
+            <div class="space-y-1">
+                <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
+                <input type="email" id="email" formControlName="email"
+                    [class.border-red-500]="hasError('email', 'required') || hasError('email', 'email')"
+                    class="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-white placeholder-gray-600 transition-all"
+                    placeholder="usuario@ejemplo.com">
+
+                @if (hasError('email', 'required')) {
+                <p class="text-xs text-red-400 pl-1">El email es requerido</p>
+                }
+                @if (hasError('email', 'email')) {
+                <p class="text-xs text-red-400 pl-1">Ingresa un email válido</p>
+                }
             </div>
 
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-                <input type="email" id="email" name="email" [(ngModel)]="loginData.email" required email
-                    class="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-white placeholder-gray-500 transition-colors"
-                    placeholder="you@example.com">
-            </div>
-
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required
-                    class="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-white placeholder-gray-500 transition-colors"
+            <!-- Password -->
+            <div class="space-y-1">
+                <label for="password" class="block text-sm font-medium text-gray-300">Contraseña</label>
+                <input type="password" id="password" formControlName="password"
+                    [class.border-red-500]="hasError('password', 'required')"
+                    class="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-white placeholder-gray-600 transition-all"
                     placeholder="••••••••">
+
+                @if (hasError('password', 'required')) {
+                <p class="text-xs text-red-400 pl-1">La contraseña es requerida</p>
+                }
             </div>
 
-            <button type="submit" [disabled]="!loginForm.form.valid || isLoading"
-                class="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 text-white font-semibold rounded-lg shadow-lg transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
-                <span *ngIf="!isLoading">Sign In</span>
-                <span *ngIf="isLoading">Signing in...</span>
+            <!-- Submit Button -->
+            <button type="submit" [disabled]="loginForm.invalid || isLoading()"
+                class="w-full py-3.5 px-4 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-500 hover:to-secondary-500 text-white font-bold rounded-xl shadow-lg shadow-primary-500/25 transform transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2">
+                @if (isLoading()) {
+                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <span>Iniciando...</span>
+                } @else {
+                <span>Iniciar Sesión</span>
+                }
             </button>
         </form>
 
-        <div class="mt-6 text-center text-sm text-gray-400">
-            Don't have an account?
-            <a routerLink="/register" class="text-primary-400 hover:text-primary-300 font-medium transition-colors">Sign
-                up</a>
+        <div class="mt-8 text-center text-sm">
+            <p class="text-gray-400">¿No tienes cuenta?
+                <a routerLink="/register"
+                    class="text-accent hover:text-accent-300 font-semibold transition-colors hover:underline decoration-accent/50 underline-offset-4">Regístrate
+                    gratis</a>
+            </p>
         </div>
     </div>
 </div>

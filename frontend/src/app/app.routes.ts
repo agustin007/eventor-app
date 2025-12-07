@@ -11,19 +11,21 @@ import { EventDetailComponent } from './pages/event-detail/event-detail.componen
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
     {
         path: '',
         component: MainLayoutComponent,
+        canActivate: [authGuard],
         children: [
-            { path: '', component: HomeComponent },
+            { path: 'home', component: HomeComponent },
             { path: 'discover', component: DiscoverComponent },
             { path: 'events/:id', component: EventDetailComponent },
-            { path: 'tickets', component: TicketsComponent, canActivate: [authGuard] },
-            { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-            { path: 'profile', component: ProfileComponent, canActivate: [authGuard] }
+            { path: 'tickets', component: TicketsComponent },
+            { path: 'dashboard', component: DashboardComponent },
+            { path: 'profile', component: ProfileComponent }
         ]
     },
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
-    { path: '**', redirectTo: '' }
+    { path: '**', redirectTo: 'login' }
 ];
