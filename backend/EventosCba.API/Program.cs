@@ -15,13 +15,43 @@ builder.WebHost.UseUrls($"http://*:{port}");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    
+    // Fallback to DATABASE_URL if DefaultConnection is missing (common in Render)
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+    }
+
     if (builder.Environment.IsProduction())
     {
-        // Fix for Render/Heroku postgres:// URL
-        if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgres://"))
+        Console.WriteLine($"[Startup] Environment: Production");
+        Console.WriteLine($"[Startup] Raw Connection String found: {!string.IsNullOrEmpty(connectionString)}");
+
+        if (!string.IsNullOrEmpty(connectionString))
         {
-            connectionString = ConvertPostgresUrlToConnectionString(connectionString);
+            // Normalize
+            connectionString = connectionString.Trim();
+            
+            // Fix for Render/Heroku URLs
+            if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+            {
+                Console.WriteLine("[Startup] Detected URL format, converting to Npgsql format...");
+                try 
+                {
+                    connectionString = ConvertPostgresUrlToConnectionString(connectionString);
+                    Console.WriteLine("[Startup] Conversion successful.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Startup] Conversion failed: {ex.Message}");
+                }
+            }
         }
+        else 
+        {
+             Console.WriteLine("[Startup] FATAL: Connection string is null or empty!");
+        }
+
         options.UseNpgsql(connectionString);
     }
     else
