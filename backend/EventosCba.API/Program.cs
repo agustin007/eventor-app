@@ -137,15 +137,17 @@ static string ConvertPostgresUrlToConnectionString(string url)
 {
     var uri = new Uri(url);
     var userInfo = uri.UserInfo.Split(':');
+    var port = uri.Port > 0 ? uri.Port : 5432;
+    
     var builder = new Npgsql.NpgsqlConnectionStringBuilder
     {
         Host = uri.Host,
-        Port = uri.Port,
+        Port = port,
         Username = userInfo[0],
         Password = userInfo[1],
         Database = uri.AbsolutePath.TrimStart('/'),
-        SslMode = Npgsql.SslMode.Require,
-        TrustServerCertificate = true
+        SslMode = Npgsql.SslMode.Require
+        // TrustServerCertificate is obsolete, removed
     };
     return builder.ToString();
 }
