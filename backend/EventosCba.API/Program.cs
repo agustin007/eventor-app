@@ -17,6 +17,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     if (builder.Environment.IsProduction())
     {
+        // Fix for Render/Heroku postgres:// URL
+        if (!string.IsNullOrEmpty(connectionString) && connectionString.StartsWith("postgres://"))
+        {
+            connectionString = ConvertPostgresUrlToConnectionString(connectionString);
+        }
         options.UseNpgsql(connectionString);
     }
     else
@@ -97,3 +102,20 @@ using (var scope = app.Services.CreateScope())
 app.MapControllers();
 
 app.Run();
+
+static string ConvertPostgresUrlToConnectionString(string url)
+{
+    var uri = new Uri(url);
+    var userInfo = uri.UserInfo.Split(':');
+    var builder = new Npgsql.NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = uri.AbsolutePath.TrimStart('/'),
+        SslMode = Npgsql.SslMode.Require,
+        TrustServerCertificate = true
+    };
+    return builder.ToString();
+}
