@@ -12,7 +12,21 @@ ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProt
 
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
+
+// Configure Kestrel to work behind Render's load balancer
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(int.Parse(port));
+});
+
+// Configure forwarded headers for Render's proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor 
+        | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Add services to the container.
 // Add services to the container.
@@ -109,6 +123,9 @@ var app = builder.Build();
 // Enable Swagger in Production for debugging/demo purposes
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// CRITICAL: Apply forwarded headers from Render's load balancer FIRST
+app.UseForwardedHeaders();
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
