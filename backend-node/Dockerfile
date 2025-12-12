@@ -17,8 +17,12 @@ RUN npx prisma generate
 # Copy source code
 COPY src ./src
 
+# Copy startup script
+COPY start.sh ./
+RUN chmod +x start.sh
+
 # Expose port
 EXPOSE 10000
 
-# Start command - runs migrations and seeds before starting server
-CMD ["npm", "run", "start:prod"]
+# Start command - uses robust shell script
+CMD ["./start.sh"]
