@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ChangeDetectionStrategy, input, output, effect } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectionStrategy, input, output, effect, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { Event } from '../../../../core/services/event.service';
@@ -32,7 +32,16 @@ export class MapComponent implements AfterViewInit {
   private map!: L.Map;
   private markers: Map<number, L.Marker> = new Map();
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private ngZone: NgZone) {
+    // Listen to Global Custom Event for "Ver Detalles"
+    window.addEventListener('map-event-detail', (e: any) => {
+      this.ngZone.run(() => {
+        const eventId = e.detail;
+        console.log('Navigating to detail for:', eventId);
+        this.router.navigate(['/events', eventId]);
+      });
+    });
+
     // Effect para actualizar markers cuando events cambia
     effect(() => {
       const events = this.events();
@@ -112,23 +121,26 @@ export class MapComponent implements AfterViewInit {
         })
           .addTo(this.map)
           .bindPopup(`
-            <div class="text-gray-900 min-w-[150px]">
-              <h3 class="font-bold text-lg">${event.title}</h3>
-              <p class="text-sm font-medium text-gray-600">${event.category}</p>
-              <p class="text-xs mt-1 text-gray-500">📅 ${new Date(event.date || Date.now()).toLocaleDateString()}</p>
-              <button class="mt-2 text-xs bg-blue-600 text-white px-2 py-1 rounded w-full">Ver Detalles</button>
+            <div class="text-gray-900 min-w-[180px] p-1 font-sans">
+              <h3 class="font-bold text-base leading-tight">${event.title}</h3>
+              <div class="flex items-center gap-2 mt-1">
+                 <span class="text-xs font-semibold px-2 py-0.5 bg-gray-200 rounded-full text-gray-700">${event.category}</span>
+              </div>
+              <p class="text-xs mt-2 text-gray-500">📅 ${new Date(event.date || Date.now()).toLocaleDateString()}</p>
+              <button 
+                onclick="window.dispatchEvent(new CustomEvent('map-event-detail', { detail: ${event.id} }))"
+                class="mt-3 w-full bg-black text-white text-xs font-bold py-2 rounded-lg hover:bg-gray-800 transition-colors shadow-lg">
+                VER DETALLES
+              </button>
             </div>
-          `)
+          `, { closeButton: false, offset: [0, -20] })
+          .on('mouseover', function (this: L.Marker) {
+            this.openPopup();
+          })
           .on('click', () => {
-            console.log('Marker clicked:', event.title);
+            // Zoom to location on click?
+            this.flyToEvent(event);
             this.markerClicked.emit(event);
-            // Optional: navigate on marker click or popup click?
-            // keeping navigation for consistency with user request about "globito" (popup)
-            // If checking popup, we might NOT want to navigate immediately?
-            // User said "no sale el globito".
-            // If I navigate immediately, popup won't be seen!
-            // So REMOVE immediate navigation. Let user click button in popup?
-            // Or just show popup.
           });
 
         this.markers.set(event.id, marker);
@@ -137,6 +149,8 @@ export class MapComponent implements AfterViewInit {
 
     console.log('Markers added:', this.markers.size);
   }
+
+
 
   private flyToEvent(event: Event): void {
     if (event.latitude && event.longitude) {

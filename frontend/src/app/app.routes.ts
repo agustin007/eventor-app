@@ -10,6 +10,7 @@ export const routes: Routes = [
     {
         path: '',
         component: MainLayoutComponent,
+        canActivate: [authGuard],
         children: [
             { path: '', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
             { path: 'home', redirectTo: '', pathMatch: 'full' },

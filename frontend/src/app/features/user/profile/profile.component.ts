@@ -28,7 +28,17 @@ export class ProfileComponent implements OnInit {
   // State signals
   profile = signal<Profile | null>(null);
   isLoading = signal(true);
-  emailNotifications = signal(true);
+
+  // Tabs State
+  activeTab = signal<'profile' | 'config'>('profile');
+
+  // Config State (Mocked for now)
+  config = signal({
+    subscription: 'free',
+    userType: 'attendee', // attendee | organizer
+    darkMode: true,
+    notifications: true
+  });
 
   // Computed - initials from name
   initials = signal('U');
@@ -60,10 +70,7 @@ export class ProfileComponent implements OnInit {
       .substring(0, 2);
   }
 
-  toggleEmailNotifications() {
-    this.emailNotifications.update(val => !val);
-    console.log('Email notifications:', this.emailNotifications());
-  }
+
 
   changePassword() {
     alert('Funcionalidad de cambio de contraseña - Por implementar');

@@ -6,30 +6,98 @@
         <app-loader [show]="isLoading()" [message]="'Cargando perfil...'" />
 
         @if (!isLoading() && profile()) {
-        <div class="text-center relative z-10">
-            <!-- Avatar / Initials -->
+        <!-- Tabs Navigation -->
+        <div class="flex border-b border-white/10 mb-8">
+            <button (click)="activeTab.set('profile')" [class.text-white]="activeTab() === 'profile'"
+                [class.border-accent]="activeTab() === 'profile'" [class.text-gray-400]="activeTab() !== 'profile'"
+                [class.border-transparent]="activeTab() !== 'profile'"
+                class="flex-1 pb-4 text-center font-medium border-b-2 transition-colors hover:text-white">
+                Mi Perfil
+            </button>
+            <button (click)="activeTab.set('config')" [class.text-white]="activeTab() === 'config'"
+                [class.border-accent]="activeTab() === 'config'" [class.text-gray-400]="activeTab() !== 'config'"
+                [class.border-transparent]="activeTab() !== 'config'"
+                class="flex-1 pb-4 text-center font-medium border-b-2 transition-colors hover:text-white">
+                Configuración
+            </button>
+        </div>
+
+        @if (activeTab() === 'profile') {
+        <!-- Profile Tab Content -->
+        <div class="animate-fadeIn">
+            <!-- Avatar -->
             <div
-                class="h-32 w-32 mx-auto rounded-full bg-gradient-to-tr from-accent to-secondary flex items-center justify-center text-5xl font-bold text-white shadow-2xl shadow-accent/25 mb-6 ring-4 ring-white/10">
+                class="h-28 w-28 mx-auto rounded-full bg-gradient-to-tr from-accent to-secondary flex items-center justify-center text-4xl font-bold text-white shadow-2xl shadow-accent/25 mb-6 ring-4 ring-white/10">
                 {{ initials() }}
             </div>
 
-            <!-- User Info -->
-            <h2 class="text-3xl font-bold text-white mb-2">{{ profile()!.name }}</h2>
-            <p class="text-gray-400 text-lg mb-8">{{ profile()!.email }}</p>
+            <!-- Info -->
+            <h2 class="text-2xl font-bold text-white mb-1">{{ profile()!.name }}</h2>
+            <p class="text-gray-400 mb-8">{{ profile()!.email }}</p>
 
-            <!-- Metadata Chips -->
-            <div class="flex justify-center gap-4 mb-10">
-                <span class="px-4 py-2 bg-white/5 rounded-full text-sm text-primary-300 border border-white/10">
-                    User Level: {{ profile()!.level }}
-                </span>
-                <span class="px-4 py-2 bg-white/5 rounded-full text-sm text-yellow-500 border border-white/10">
-                    Points: {{ profile()!.points }}
-                </span>
+            <!-- Stats -->
+            <div class="grid grid-cols-2 gap-4 mb-10">
+                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Nivel</p>
+                    <p class="text-xl font-bold text-primary-300">{{ profile()!.level }}</p>
+                </div>
+                <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Puntos</p>
+                    <p class="text-xl font-bold text-yellow-500">{{ profile()!.points }}</p>
+                </div>
+            </div>
+        </div>
+        } @else {
+        <!-- Config Tab Content -->
+        <div class="animate-fadeIn text-left space-y-6">
+            <!-- Subscription -->
+            <div class="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400">Suscripción</p>
+                    <p class="text-lg font-bold text-white capitalize">{{ config().subscription === 'free' ? 'Plan
+                        Gratuito' : 'Premium' }}</p>
+                </div>
+                <button
+                    class="px-4 py-2 bg-gradient-to-r from-accent to-secondary text-white text-xs font-bold rounded-lg border border-white/20 hover:scale-105 transition-transform">
+                    MEJORAR
+                </button>
             </div>
 
-            <!-- Logout Button (Only Action) -->
+            <!-- User Type -->
+            <div class="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-400">Tipo de Cuenta</p>
+                    <p class="text-lg font-bold text-white capitalize">{{ config().userType === 'attendee' ? 'Asistente'
+                        : 'Organizador' }}</p>
+                </div>
+                <button class="text-gray-400 hover:text-white transition-colors">
+                    ⚙️
+                </button>
+            </div>
+
+            <!-- Toggles -->
+            <div class="space-y-4 pt-4 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Modo Oscuro</span>
+                    <div class="w-10 h-6 bg-accent rounded-full relative cursor-pointer">
+                        <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Notificaciones</span>
+                    <div class="w-10 h-6 bg-accent rounded-full relative cursor-pointer">
+                        <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Logout Button (Always Visible or in Config?) -->
+        <!-- User said "Profile Module... includes Config...". Logout fits in both or at bottom -->
+        <div class="mt-8 pt-6 border-t border-white/10">
             <button (click)="logout()"
-                class="w-full max-w-sm py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold rounded-xl border border-red-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 mx-auto">
+                class="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold rounded-xl border border-red-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
                 <span class="text-xl">🚪</span> Cerrar Sesión
             </button>
         </div>

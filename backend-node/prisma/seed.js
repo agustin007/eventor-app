@@ -314,7 +314,56 @@ async function main() {
         await prisma.event.create({ data: event });
     }
 
-    console.log(`[Seed] Created ${events.length} events successfully!`);
+    // Create Tickets (Mock Sales)
+    console.log('[Seed] Creating tickets...');
+
+    // 1. Give Demo User some tickets
+    const demoUser = await prisma.user.findUnique({ where: { email: 'demo@eventor.com' } });
+    const allEvents = await prisma.event.findMany();
+
+    if (demoUser && allEvents.length > 0) {
+        // Buy tickets for first 3 events
+        for (let i = 0; i < 3; i++) {
+            await prisma.ticket.create({
+                data: {
+                    userId: demoUser.id,
+                    eventId: allEvents[i].id,
+                    qrCode: `mock-qr-${i}`,
+                    status: 'VALID'
+                }
+            });
+        }
+    }
+
+    // 2. Add random sales to events (for Dashboard Stats)
+    // We need to create random users or just assign to demo for now?
+    // Dashboard counts tickets by event.tickets.length.
+    // If we want "Sales" on dashboard, we need tickets linked to events.
+    // We can link them to the demo user for simplicity, or create a dummy buyer.
+
+    // Create a dummy buyer
+    const dummyBuyer = await prisma.user.upsert({
+        where: { email: 'buyer@test.com' },
+        update: {},
+        create: { email: 'buyer@test.com', password: 'hash', fullName: 'Random Buyer' }
+    });
+
+    // Add 5-20 tickets to each event (to show sales volume)
+    for (const event of allEvents) {
+        const salesCount = Math.floor(Math.random() * 15) + 5;
+        for (let k = 0; k < salesCount; k++) {
+            await prisma.ticket.create({
+                data: {
+                    userId: dummyBuyer.id,
+                    eventId: event.id,
+                    qrCode: `auto-qr-${event.id}-${k}`,
+                    status: 'VALID'
+                }
+            });
+        }
+    }
+
+    console.log(`[Seed] Created ${events.length} events and mock tickets successfully!`);
 }
 
 main()

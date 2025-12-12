@@ -1,39 +1,48 @@
-<div class="relative w-full h-full">
-    <!-- Loading State -->
-    <app-loader [show]="isLoading()" [message]="'Cargando eventos...'" />
+<div class="flex flex-col h-full bg-gray-950">
+    <!-- Filters Header -->
+    <div class="h-20 bg-gray-900/50 border-b border-white/5 flex items-center px-8 z-20">
+        <div class="flex gap-3 overflow-x-auto hide-scrollbar w-full py-2">
+            <button (click)="selectCategory(null)" [class.bg-primary-600]="selectedCategory() === null"
+                [class.text-white]="selectedCategory() === null" [class.bg-white_5]="selectedCategory() !== null"
+                [class.text-gray-400]="selectedCategory() !== null"
+                class="px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-white/10 hover:bg-white/10 transition-all flex-shrink-0">
+                Todo ({{ allEvents().length }})
+            </button>
 
-    <!-- Filter Chips -->
-    <div class="absolute top-4 left-4 right-4 z-20 flex gap-2 overflow-x-auto hide-scrollbar">
-        <button (click)="selectCategory(null)" [class.bg-primary-600]="selectedCategory() === null"
-            [class.bg-white]="selectedCategory() !== null" [class.bg-opacity-10]="selectedCategory() !== null"
-            class="px-4 py-2 backdrop-blur-md border border-white/10 rounded-full text-white text-sm font-medium whitespace-nowrap hover:bg-white/20 transition-colors">
-            Todos ({{ allEvents().length }})
-        </button>
-
-        @for (cat of categories; track cat) {
-        <button (click)="selectCategory(cat)" [class.bg-primary-600]="selectedCategory() === cat"
-            [class.bg-white]="selectedCategory() !== cat" [class.bg-opacity-10]="selectedCategory() !== cat"
-            class="px-4 py-2 backdrop-blur-md border border-white/10 rounded-full text-white text-sm font-medium whitespace-nowrap hover:bg-white/20 transition-colors">
-            {{ cat }} ({{ eventCountByCategory()[cat] || 0 }})
-        </button>
-        }
-    </div>
-
-    <!-- Map -->
-    <app-map [events]="filteredEvents()" [selectedEvent]="selectedEvent()" (markerClicked)="onEventSelected($event)" />
-
-    <!-- Carousel -->
-    <div class="absolute bottom-0 left-0 w-full z-10 pb-4 pointer-events-none">
-        <div class="pointer-events-auto">
-            <app-carousel [events]="filteredEvents()" (eventSelected)="onEventSelected($event)" />
+            @for (cat of categories; track cat) {
+            <button (click)="selectCategory(cat)" [class.bg-primary-600]="selectedCategory() === cat"
+                [class.text-white]="selectedCategory() === cat" [class.bg-white_5]="selectedCategory() !== cat"
+                [class.text-gray-400]="selectedCategory() !== cat"
+                class="px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-white/10 hover:bg-white/10 transition-all flex-shrink-0">
+                {{ cat }} ({{ eventCountByCategory()[cat] || 0 }})
+            </button>
+            }
         </div>
     </div>
 
-    <!-- Event Count Badge -->
-    @if (filteredEvents().length > 0) {
-    <div
-        class="absolute top-4 right-4 z-20 px-4 py-2 bg-black/70 backdrop-blur-md border border-white/10 rounded-full text-white text-sm font-medium">
-        {{ filteredEvents().length }} evento{{ filteredEvents().length !== 1 ? 's' : '' }}
+    <!-- Map Container with Padding -->
+    <div class="flex-1 relative p-4 md:p-12 overflow-hidden">
+        <app-loader [show]="isLoading()" [message]="'Cargando experiencias...'" />
+
+        <div class="w-full h-full rounded-3xl overflow-hidden shadow-2xl border border-white/10 relative bg-gray-900">
+            <app-map [events]="filteredEvents()" [selectedEvent]="selectedEvent()"
+                (markerClicked)="onEventSelected($event)" />
+
+            <!-- Carousel Floating Over Map (Bottom) -->
+            <!-- User asked for horizontal scroll: handled by CarouselComponent CSS -->
+            <div class="absolute bottom-6 left-0 right-0 z-[400] px-6 pointer-events-none">
+                <div class="pointer-events-auto max-w-5xl mx-auto overflow-hidden">
+                    <app-carousel [events]="filteredEvents()" (eventSelected)="onEventSelected($event)" />
+                </div>
+            </div>
+
+            <!-- Count Badge -->
+            @if (filteredEvents().length > 0) {
+            <div
+                class="absolute top-6 right-6 z-[400] px-4 py-2 bg-black/70 backdrop-blur-md border border-white/10 rounded-full text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                {{ filteredEvents().length }} {{ filteredEvents().length !== 1 ? 'Experiencias' : 'Experiencia' }}
+            </div>
+            }
+        </div>
     </div>
-    }
 </div>
