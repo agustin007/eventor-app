@@ -38,13 +38,8 @@ interface Category {
           <div class="flex justify-center space-x-4 animate-fade-in-up delay-200">
             <button 
               routerLink="/discover"
-              class="px-8 py-3 bg-accent hover:bg-indigo-500 text-white rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-accent/25">
-              Explorar Mapa
-            </button>
-            <button 
-              routerLink="/tickets"
-              class="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold backdrop-blur-md transition-all">
-              Mis Tickets
+              class="px-8 py-3 bg-gradient-to-r from-accent to-secondary hover:from-indigo-600 hover:to-pink-600 text-white rounded-full font-bold transition-all transform hover:scale-105 shadow-lg shadow-accent/25">
+              Explorar Eventos
             </button>
           </div>
         </div>
