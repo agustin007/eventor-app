@@ -20,5 +20,5 @@ COPY src ./src
 # Expose port
 EXPOSE 10000
 
-# Start command
-CMD ["npm", "start"]
+# Start command - runs migrations and seeds before starting server
+CMD ["npm", "run", "start:prod"]
