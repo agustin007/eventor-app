@@ -1,31 +1,33 @@
 import { Routes } from '@angular/router';
-import { MainLayoutComponent } from './components/layout/main-layout/main-layout.component';
-import { HomeComponent } from './pages/home/home.component';
-import { DiscoverComponent } from './pages/discover/discover.component';
-import { TicketsComponent } from './pages/tickets/tickets.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { LoginComponent } from './pages/auth/login/login.component';
-import { RegisterComponent } from './pages/auth/register/register.component';
-import { EventDetailComponent } from './pages/event-detail/event-detail.component';
-import { authGuard } from './guards/auth.guard';
+import { MainLayoutComponent } from '@core/components/layout/main-layout/main-layout.component';
+import { authGuard } from '@core/guards/auth.guard';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
+    {
+        path: 'auth',
+        loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
+    },
     {
         path: '',
         component: MainLayoutComponent,
         children: [
-            { path: '', component: HomeComponent }, // Public home as default
-            { path: 'home', component: HomeComponent }, // Public home
-            { path: 'discover', component: DiscoverComponent, canActivate: [authGuard] },
-            { path: 'events/:id', component: EventDetailComponent },
-            { path: 'tickets', component: TicketsComponent, canActivate: [authGuard] },
-            { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-            { path: 'profile', component: ProfileComponent, canActivate: [authGuard] }
+            { path: '', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
+            { path: 'home', redirectTo: '', pathMatch: 'full' },
+            {
+                path: 'events',
+                loadChildren: () => import('./features/events/events.routes').then(m => m.EVENTS_ROUTES)
+            },
+            { path: 'discover', redirectTo: 'events/discover' }, // Alias for discover
+            {
+                path: 'user',
+                loadChildren: () => import('./features/user/user.routes').then(m => m.USER_ROUTES),
+                canActivate: [authGuard]
+            },
+            // Legacy / Alias Routes used in existing components
+            { path: 'dashboard', redirectTo: 'user/dashboard' },
+            { path: 'profile', redirectTo: 'user/profile' },
+            { path: 'tickets', redirectTo: 'user/tickets' }
         ]
     },
     { path: '**', redirectTo: '' }
 ];
-

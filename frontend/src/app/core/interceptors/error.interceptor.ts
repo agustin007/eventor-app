@@ -1,13 +1,13 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '@core/services/toast.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     const toastService = inject(ToastService);
 
     return next(req).pipe(
-        catchError((error) => {
+        catchError((error: HttpErrorResponse) => {
             let message = 'Ha ocurrido un error inesperado';
 
             if (error.status === 401) {
@@ -17,6 +17,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             } else if (error.status === 0) {
                 message = 'Error de conexión con el servidor';
             } else if (error.error?.message) {
+                // @ts-ignore
                 message = error.error.message;
             }
 

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Event } from '../../../services/event.service';
+import { Event } from '@core/services/event.service';
 
 @Component({
   selector: 'app-event-card',
