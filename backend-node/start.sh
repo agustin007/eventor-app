@@ -3,8 +3,8 @@ set -e
 
 echo "[Startup] Running database setup..."
 
-# Try to push schema, but don't fail if it already exists
-npx prisma db push --accept-data-loss || echo "[Startup] Schema already exists or push failed, continuing..."
+# Force reset DB to drop old .NET tables and create fresh schema
+npx prisma db push --force-reset --accept-data-loss || echo "[Startup] Schema push failed, continuing..."
 
 # Generate Prisma Client (always needed)
 echo "[Startup] Generating Prisma Client..."
