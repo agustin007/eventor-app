@@ -1,0 +1,57 @@
+// Prisma schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model (replaces ApplicationUser from .NET Identity)
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // bcrypt hashed
+  fullName  String
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("Users")
+}
+
+// Event model
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  latitude    Float
+  longitude   Float
+  price       Decimal  @db.Decimal(10, 2)
+  category    String
+  imageUrl    String
+  organizerId String?
+  tickets     Ticket[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("Events")
+}
+
+// Ticket model
+model Ticket {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  eventId      Int
+  qrCode       String   @unique
+  purchaseDate DateTime @default(now())
+  
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@map("Tickets")
+}
