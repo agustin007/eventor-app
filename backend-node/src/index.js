@@ -25,6 +25,9 @@ app.use('/api/events', require('./routes/events.routes'));
 app.use('/api/tickets', require('./routes/tickets.routes'));
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
 app.use('/api/profile', require('./routes/profile.routes'));
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -13,6 +13,23 @@ async function main() {
         return;
     }
 
+    // Create Default User
+    console.log('[Seed] Creating default user...');
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash('password123', 10);
+
+    const user = await prisma.user.upsert({
+        where: { email: 'demo@eventor.com' },
+        update: {},
+        create: {
+            email: 'demo@eventor.com',
+            fullName: 'Demo User',
+            password: hashedPassword
+        }
+    });
+
+    console.log(`[Seed] Created user: ${user.email} / password123`);
+
     console.log('[Seed] Creating events...');
 
     const events = [
