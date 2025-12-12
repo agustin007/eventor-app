@@ -131,6 +131,7 @@ export class DashboardComponent implements OnInit {
   stats = signal<DashboardStats | null>(null);
   myEvents = signal<MyEvent[]>([]);
   isLoading = signal(true);
+  error = signal<string | null>(null);
   selectedFilter = signal<string>('Todos');
 
   filterOptions = ['Todos', 'Publicados', 'Borradores'];
@@ -157,10 +158,17 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboard() {
+    this.isLoading.set(true);
+    this.error.set(null);
+
     // Load stats
     this.userService.getDashboardStats().subscribe({
       next: (data) => {
         this.stats.set(data);
+      },
+      error: (err) => {
+        console.error('Error loading stats:', err);
+        this.error.set('No se pudieron cargar las estadísticas');
       }
     });
 
@@ -172,6 +180,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading events:', err);
+        this.error.set('No se pudieron cargar los eventos');
         this.isLoading.set(false);
       }
     });

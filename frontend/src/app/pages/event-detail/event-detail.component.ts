@@ -34,6 +34,7 @@ export class EventDetailComponent implements OnInit {
   event = signal<Event | null>(null);
   isLoading = signal(true);
   isPurchasing = signal(false);
+  error = signal<string | null>(null);
 
   // Computed - formatted date
   formattedDate = computed(() => {
@@ -74,6 +75,7 @@ export class EventDetailComponent implements OnInit {
 
   loadEvent(id: number) {
     this.isLoading.set(true);
+    this.error.set(null);
 
     this.eventService.getEventById(id).subscribe({
       next: (data) => {
@@ -83,6 +85,7 @@ export class EventDetailComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading event:', err);
+        this.error.set('No se pudo cargar el evento. Intenta nuevamente.');
         this.isLoading.set(false);
       }
     });

@@ -2,7 +2,28 @@
     <!-- Loading State -->
     <app-loader [show]="isLoading()" [message]="'Cargando evento...'" />
 
-    @if (!isLoading() && event()) {
+    <!-- Error State -->
+    @if (!isLoading() && error()) {
+    <div class="flex items-center justify-center min-h-[60vh] p-8">
+        <div class="text-center bg-red-500/10 border border-red-500/20 rounded-xl p-8 max-w-md">
+            <div class="text-6xl mb-4">⚠️</div>
+            <h3 class="text-xl font-bold text-white mb-2">Error al cargar evento</h3>
+            <p class="text-gray-400 mb-6">{{ error() }}</p>
+            <div class="flex gap-4 justify-center">
+                <a routerLink="/discover"
+                    class="px-6 py-3 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors">
+                    Volver al mapa
+                </a>
+                <button (click)="loadEvent(+eventId()!)"
+                    class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-500 transition-colors">
+                    Reintentar
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    @if (!isLoading() && !error() && event()) {
     <div class="relative">
         <!-- Hero Image -->
         <div class="relative h-[50vh] w-full overflow-hidden">
