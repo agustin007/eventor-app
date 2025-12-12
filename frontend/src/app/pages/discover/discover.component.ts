@@ -11,7 +11,7 @@ import { EventService, Event } from '../../services/event.service';
   imports: [CommonModule, MapComponent, CarouselComponent, LoaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="relative h-screen w-full">
+    <div class="relative w-full h-full">
       <!-- Loading State -->
       <app-loader [show]="isLoading()" [message]="'Cargando eventos...'" />
       
@@ -64,8 +64,13 @@ import { EventService, Event } from '../../services/event.service';
   styles: [`
     :host {
       display: block;
-      height: calc(100vh - 64px);
+      height: 100vh;
       width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-left: 256px;
+      padding-top: 64px;
     }
     
     .hide-scrollbar {

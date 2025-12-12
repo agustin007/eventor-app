@@ -1,13 +1,24 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Run TypeScript build to catch compilation errors
-echo "🔍 Validando TypeScript..."
-cd frontend && npm run build
+echo "🔍 Validando código antes del commit..."
 
+# Validate Frontend
+echo "📦 Frontend: Compilando TypeScript..."
+cd frontend && npm run build
 if [ $? -ne 0 ]; then
-  echo "❌ Build falló. No se puede hacer commit con errores de TypeScript."
+  echo "❌ Frontend build falló"
   exit 1
 fi
+cd ..
 
-echo "✅ Build exitoso!"
+# Validate Backend (Node.js - just check syntax)
+echo "🔧 Backend: Verificando sintaxis..."
+cd backend-node && node -c src/index.js
+if [ $? -ne 0 ]; then
+  echo "❌ Backend syntax error"
+  exit 1
+fi
+cd ..
+
+echo "✅ Todo validado correctamente!"
