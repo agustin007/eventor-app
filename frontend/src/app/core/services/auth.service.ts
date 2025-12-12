@@ -88,6 +88,18 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  isSessionValid(): boolean {
+    const token = this.getToken();
+    const expiration = localStorage.getItem('expiration');
+    if (!token || !expiration) return false;
+
+    if (this.isTokenExpired(expiration)) {
+      this.logout();
+      return false;
+    }
+    return true;
+  }
+
   private isTokenExpired(expiration: string): boolean {
     const expireDate = new Date(expiration);
     return expireDate < new Date();

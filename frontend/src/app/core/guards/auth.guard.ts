@@ -7,7 +7,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
     const toastService = inject(ToastService);
 
-    if (authService.isAuthenticated()) {
+    if (authService.isSessionValid()) {
         return true;
     }
 
