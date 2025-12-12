@@ -1,15 +1,18 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
-    const router = inject(Router);
+    const toastService = inject(ToastService);
 
     if (authService.isAuthenticated()) {
         return true;
     }
 
-    // Redirect to login with return url
-    return router.createUrlTree(['/login']);
+    // Usuario no autenticado o sesión expirada
+    toastService.error('Debes iniciar sesión para acceder a esta sección');
+    authService.logout(); // Limpia storage y redirige
+    return false;
 };

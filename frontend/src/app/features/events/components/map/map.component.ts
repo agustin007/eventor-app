@@ -111,10 +111,24 @@ export class MapComponent implements AfterViewInit {
           icon: this.createCustomIcon(event.category)
         })
           .addTo(this.map)
+          .bindPopup(`
+            <div class="text-gray-900 min-w-[150px]">
+              <h3 class="font-bold text-lg">${event.title}</h3>
+              <p class="text-sm font-medium text-gray-600">${event.category}</p>
+              <p class="text-xs mt-1 text-gray-500">📅 ${new Date(event.date || Date.now()).toLocaleDateString()}</p>
+              <button class="mt-2 text-xs bg-blue-600 text-white px-2 py-1 rounded w-full">Ver Detalles</button>
+            </div>
+          `)
           .on('click', () => {
             console.log('Marker clicked:', event.title);
             this.markerClicked.emit(event);
-            this.router.navigate(['/events', event.id]);
+            // Optional: navigate on marker click or popup click?
+            // keeping navigation for consistency with user request about "globito" (popup)
+            // If checking popup, we might NOT want to navigate immediately?
+            // User said "no sale el globito".
+            // If I navigate immediately, popup won't be seen!
+            // So REMOVE immediate navigation. Let user click button in popup?
+            // Or just show popup.
           });
 
         this.markers.set(event.id, marker);

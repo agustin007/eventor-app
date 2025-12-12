@@ -12,7 +12,7 @@ export class UserService {
     constructor(private http: HttpClient) { }
 
     getMyTickets(): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/tickets`);
+        return this.http.get<any[]>(`${this.apiUrl}/tickets/my-tickets`);
     }
 
     getDashboardStats(): Observable<any> {

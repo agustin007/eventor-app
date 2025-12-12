@@ -47,9 +47,17 @@ export class AuthService {
   private loadUserFromStorage() {
     const user = localStorage.getItem('user');
     const token = localStorage.getItem('token');
+    const expiration = localStorage.getItem('expiration');
 
-    if (user && token) {
-      this.currentUser.set(JSON.parse(user));
+    if (user && token && expiration) {
+      if (this.isTokenExpired(expiration)) {
+        this.logout();
+      } else {
+        this.currentUser.set(JSON.parse(user));
+      }
+    } else {
+      // Garbage collection if incomplete
+      if (token || user) this.logout();
     }
   }
 
@@ -62,6 +70,7 @@ export class AuthService {
       tap(response => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('expiration', response.expiration);
         this.currentUser.set(response.user);
       })
     );
@@ -70,11 +79,19 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('expiration');
     this.currentUser.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  private isTokenExpired(expiration: string): boolean {
+    const expireDate = new Date(expiration);
+    return expireDate < new Date();
+  }
+
+
 }

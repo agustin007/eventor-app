@@ -5,32 +5,39 @@ const prisma = require('../config/database');
  * @desc    Get dashboard statistics for authenticated user
  * @access  Private
  */
+// getStats: Aggregated stats for Organizer
 const getStats = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        // Count total tickets purchased by user
-        const totalTickets = await prisma.ticket.count({
-            where: { userId }
+        // Find all events organized by this user
+        const events = await prisma.event.findMany({
+            where: { organizerId: userId },
+            include: { tickets: true }
         });
 
-        // Calculate total spent (sum of ticket prices)
-        const tickets = await prisma.ticket.findMany({
-            where: { userId },
-            include: { event: true }
+        const totalEvents = events.length;
+
+        let ticketsSold = 0;
+        let revenue = 0;
+        let totalViews = 0;
+
+        events.forEach(event => {
+            const sales = event.tickets.length;
+            ticketsSold += sales;
+            revenue += sales * parseFloat(event.price);
+            // Mock views since we don't track them yet
+            totalViews += sales * 5 + Math.floor(Math.random() * 100);
         });
 
-        const totalSpent = tickets.reduce((sum, ticket) => {
-            return sum + parseFloat(ticket.event.price);
-        }, 0);
-
-        // Count events user has attended
-        const eventsAttended = new Set(tickets.map(t => t.eventId)).size;
+        // Mock rating
+        const rating = totalEvents > 0 ? 4.8 : 0;
 
         res.status(200).json({
-            totalTickets,
-            totalSpent,
-            eventsAttended
+            totalViews,
+            ticketsSold,
+            revenue,
+            rating
         });
     } catch (error) {
         console.error('[Dashboard] Get stats error:', error);
@@ -38,42 +45,27 @@ const getStats = async (req, res) => {
     }
 };
 
-/**
- * @route   GET /api/dashboard/events
- * @desc    Get user's event history
- * @access  Private
- */
+// getUserEvents: List of events organized by user
 const getUserEvents = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const tickets = await prisma.ticket.findMany({
-            where: { userId },
-            include: {
-                event: true
-            },
-            orderBy: { purchaseDate: 'desc' }
+        const events = await prisma.event.findMany({
+            where: { organizerId: userId },
+            include: { tickets: true },
+            orderBy: { date: 'desc' }
         });
 
-        // Group tickets by event
-        const eventsMap = new Map();
-        tickets.forEach(ticket => {
-            const eventId = ticket.event.id;
-            if (!eventsMap.has(eventId)) {
-                eventsMap.set(eventId, {
-                    ...ticket.event,
-                    ticketCount: 0,
-                    totalSpent: 0
-                });
-            }
-            const eventData = eventsMap.get(eventId);
-            eventData.ticketCount += 1;
-            eventData.totalSpent += parseFloat(ticket.event.price);
-        });
+        // Map to frontend interface
+        const formattedEvents = events.map(event => ({
+            title: event.title,
+            status: 'Published', // Schema doesn't have status, default to Published
+            views: event.tickets.length * 5 + 10, // Mock
+            sales: event.tickets.length,
+            id: event.id
+        }));
 
-        const events = Array.from(eventsMap.values());
-
-        res.status(200).json(events);
+        res.status(200).json(formattedEvents);
     } catch (error) {
         console.error('[Dashboard] Get events error:', error);
         res.status(500).json({ message: 'Error fetching user events' });
